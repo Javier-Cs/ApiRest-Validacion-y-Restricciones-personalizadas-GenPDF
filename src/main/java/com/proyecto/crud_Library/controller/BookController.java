@@ -1,5 +1,8 @@
 package com.proyecto.crud_Library.controller;
 
+import com.proyecto.crud_Library.dto.BookDtoGet;
+import com.proyecto.crud_Library.dto.BookDtoPost;
+import com.proyecto.crud_Library.dto.BookMapper;
 import com.proyecto.crud_Library.entity.Book;
 import com.proyecto.crud_Library.service.BookServiceImpl;
 import org.springframework.http.ResponseEntity;
@@ -12,30 +15,36 @@ import java.util.List;
 public class BookController {
 
     private final BookServiceImpl bookService;
+    // implementamos el mapper
+    private final BookMapper bookMapper;
 
 
-    public BookController(BookServiceImpl bookService) {
+    public BookController(BookServiceImpl bookService, BookMapper bookMapper) {
         this.bookService = bookService;
+        this.bookMapper = bookMapper;
     }
 
+
+    // los metodos deben de devolver un DTO
     @GetMapping("/Get")
-    public ResponseEntity<List<Book>> findAll() {
+    public ResponseEntity<List<BookDtoGet>> findAll() {
         return ResponseEntity.ok().body(bookService.findAll());
     }
 
     @GetMapping("GetById/{id}")
-    public ResponseEntity<Book> findById(@PathVariable Long id) {
+    public ResponseEntity<BookDtoGet> findById(@PathVariable Long id) {
         if (bookService.findById(id) == null) {
             return ResponseEntity.notFound().build();
         }else {
-            Book book = bookService.findById(id);
+            BookDtoGet book = bookService.findById(id);
             return ResponseEntity.ok().body(book);
         }
     }
 
     @PostMapping("/save")
-    public ResponseEntity<Book> save(@RequestBody Book book) {
-        return  ResponseEntity.ok(bookService.save(book));
+    public ResponseEntity<BookDtoPost> save(@RequestBody BookDtoPost bookPost) {
+        BookDtoPost bookDtoPost = bookService.save(bookPost);
+        return  ResponseEntity.ok().body(bookDtoPost);
     }
 
 
@@ -46,7 +55,7 @@ public class BookController {
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity<Book> put(@PathVariable Long id, @RequestBody Book book) {
+    public ResponseEntity<BookDtoPost> put(@PathVariable Long id, @RequestBody BookDtoPost book) {
         return ResponseEntity.ok(bookService.update(id, book));
     }
 
